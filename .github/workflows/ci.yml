@@ -17,6 +17,8 @@ concurrency:
 jobs:
   build-and-test:
     runs-on: ubuntu-22.04
+    env:
+      WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
     strategy:
       fail-fast: false
       matrix:
@@ -47,3 +49,15 @@ jobs:
         with:
           name: dist-${{ matrix.node-version }}
           path: dist
+
+      - name: Notify on failure
+        if: ${{ failure() }}
+        shell: bash
+        run: |
+          if [ -z "$WEBHOOK_URL" ]; then
+            echo "WEBHOOK_URL not set - skipping notification"
+            exit 0
+          fi
+          PAYLOAD="{\"text\":\"CI FAILED: repo=${GITHUB_REPOSITORY} ref=${GITHUB_REF} run=${GITHUB_RUN_NUMBER} matrix_node=${{ matrix.node-version }}\"}"
+          # dla Slack/Discord/Teams zmień strukturę payload jeśli potrzeba
+          curl -s -X POST -H 'Content-type: application/json' --data "$PAYLOAD" "$WEBHOOK_URL"
