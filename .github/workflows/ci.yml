@@ -1,4 +1,4 @@
-name: CI - Node TypeScript
+﻿name: CI - Node TypeScript
 
 on:
   push:
@@ -50,7 +50,7 @@ jobs:
           name: dist-${{ matrix.node-version }}
           path: dist
 
-      - name: Notify on failure
+      - name: Notify on failure (Discord)
         if: ${{ failure() }}
         shell: bash
         run: |
@@ -58,6 +58,5 @@ jobs:
             echo "WEBHOOK_URL not set - skipping notification"
             exit 0
           fi
-          PAYLOAD="{\"text\":\"CI FAILED: repo=${GITHUB_REPOSITORY} ref=${GITHUB_REF} run=${GITHUB_RUN_NUMBER} matrix_node=${{ matrix.node-version }}\"}"
-          # dla Slack/Discord/Teams zmień strukturę payload jeśli potrzeba
-          curl -s -X POST -H 'Content-type: application/json' --data "$PAYLOAD" "$WEBHOOK_URL"
+          PAYLOAD="{\"content\":\"CI FAILED: repo=${GITHUB_REPOSITORY} ref=${GITHUB_REF} run=${GITHUB_RUN_NUMBER} node=${{ matrix.node-version }}\"}"
+          curl -s -X POST -H "Content-Type: application/json" --data "$PAYLOAD" "$WEBHOOK_URL"
