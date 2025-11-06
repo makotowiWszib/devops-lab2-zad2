@@ -1,0 +1,13 @@
+{
+  "name": "devops-lab2-zad2",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "test": "node tests/test-runner.js"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "typescript": "^5.0.0"
+  }
+}
